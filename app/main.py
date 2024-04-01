@@ -1,9 +1,15 @@
 import requests
 import easyocr
-from fastapi import FastAPI, HTTPException
+from pathlib import Path
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
 
+BASE_DIR = Path(__file__).resolve().parent
+
+templates = Jinja2Templates(directory=str(BASE_DIR/"templates"))
 # # 이미지 URL을 받아서 텍스트를 추출하여 JSON 형식으로 반환하는 엔드포인트
 # @app.get("/detect/")
 # async def extract_text_from_image(image_url: str):
@@ -23,8 +29,7 @@ app = FastAPI()
     
 #     except requests.exceptions.RequestException as e:
 #         raise HTTPException(status_code=400, detail=str(e))
-@app.get("/")
-def hello_world():
-    print("hello_wordld")
-    
-    return None
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    context = {"request": request, "title": "데이터 수집가"}
+    return templates.TemplateResponse("index.html", context=context)
