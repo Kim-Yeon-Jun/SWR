@@ -47,7 +47,7 @@ async def extract_text_from_image(file: UploadFile = File(...)):
         else :
             gender = "gender check failed"
         # JSON 형식으로 반환
-        result = {"name": name, "rrn": rrn, "birth" : birth, "gender" : gender}
+        result = {"name": name, "birth" : birth, "gender" : gender}
         
         return result
     
