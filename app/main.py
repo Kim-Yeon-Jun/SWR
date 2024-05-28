@@ -30,22 +30,35 @@ async def extract_text_from_image(file: UploadFile = File(...)):
         # 이름 추출
         name_pattern = re.compile(r"[가-힣]{2,4}")  # 글자 수가 2에서 4인 한글 패턴
         name_match = name_pattern.search(text)
-        name = name_match.group() if name_match else None
+        name = name_match.group() if name_match else "name check failed"
 
         # 주민등록번호 추출
         rrn_pattern = re.compile(r"\d{6}-\d{7}")  # 숫자-숫자 형식 패턴
         rrn_match = rrn_pattern.search(text)
-        rrn = rrn_match.group() if rrn_match else None
+        rrn = rrn_match.group() if rrn_match else "rrn check failed"
 
         birth = rrn.split('-')[0]
         gender_check = rrn.split('-')[1][0]
         print(gender_check)
+        
         if gender_check == "1" or gender_check=="3":
             gender = "male" #male
         elif gender_check == "2" or gender_check =="4":
             gender = "female" #female
         else :
             gender = "gender check failed"
+        
+        if gender_check in ["1","2","3","4"]:
+            if gender_check == "1" or "2":
+                year = 1900
+            else :
+                year = 2000
+        tmp = int(birth[0:2])
+        year += tmp
+        month = birth[2:4]
+        day = birth[4:6]
+        birth = f"{year}-{month}-{day}"
+        print(type(name),type(birth),type(gender))
         # JSON 형식으로 반환
         result = {"name": name, "birth" : birth, "gender" : gender}
         
