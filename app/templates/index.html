@@ -1,12 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello, World!</title>
+    <title>데이터 수집가</title>
 </head>
 <body>
-    <h1>Hello, World!</h1>
-    <p>This is a simple HTML page.</p>
+    <h1>이미지 업로드</h1>
+    <form action="/detect/" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required>
+        <button type="submit">업로드 및 OCR 처리</button>
+    </form>
+    <h2>결과</h2>
+    <div id="result"></div>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            
+            const formData = new FormData(this);
+            const response = await fetch('/detect/', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            document.getElementById('result').innerText = JSON.stringify(result, null, 2);
+        });
+    </script>
 </body>
 </html>
