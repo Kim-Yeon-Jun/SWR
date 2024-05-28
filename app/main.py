@@ -7,15 +7,23 @@ from fastapi import FastAPI, HTTPException, Request, UploadFile, File
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import time
+from concurrent.futures import ThreadPoolExecutor
+import asyncio
 
 app = FastAPI()
 
 BASE_DIR = Path(__file__).resolve().parent
 
+reader = easyocr.Reader(['ko'])
+
+executor = ThreadPoolExecutor(max_workers=4)
+
 templates = Jinja2Templates(directory=str(BASE_DIR/"templates"))
+
 async def preprocess_image(contents):
-    reader = easyocr.Reader(['ko'])
-    results = reader.readtext(contents)
+    loop = asyncio.get_event_loop()
+    results = await loop.run_in_executor(executor, reader.readtext, contents)
+    #results = reader.readtext(contents)
     return results
 
 @app.post("/detect/")
