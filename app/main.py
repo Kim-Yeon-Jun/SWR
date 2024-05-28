@@ -12,6 +12,11 @@ app = FastAPI()
 BASE_DIR = Path(__file__).resolve().parent
 
 templates = Jinja2Templates(directory=str(BASE_DIR/"templates"))
+async def preprocess_image(contents):
+    reader = easyocr.Reader(['ko'])
+    results = reader.readtext(contents)
+    return results
+
 @app.post("/detect/")
 async def extract_text_from_image(file: UploadFile = File(...)):
     try:
@@ -19,8 +24,7 @@ async def extract_text_from_image(file: UploadFile = File(...)):
         contents = await file.read()
         
         # EasyOCR을 초기화하고 이미지에서 텍스트 추출
-        reader = easyocr.Reader(['ko'])
-        results = reader.readtext(contents)
+        results = await preprocess_image(contents)
 
         # 추출된 텍스트를 한 줄로 합치기
         text = ' '.join([result[1] for result in results])
