@@ -21,11 +21,14 @@ async def extract_text_from_image(file: UploadFile = File(...)):
         # EasyOCR을 초기화하고 이미지에서 텍스트 추출
         reader = easyocr.Reader(['ko'])
         results = reader.readtext(contents)
-        
+
         # 추출된 텍스트를 한 줄로 합치기
         text = ' '.join([result[1] for result in results])
+        print(f"1 : {text}")
         text = text.split(' ', 1)[1]
-        print(text)
+        print(f"2 : {text}")
+        text = text.replace(" ","")
+        print(f"3 : {text}")
 
         # 이름 추출
         name_pattern = re.compile(r"[가-힣]{2,4}")  # 글자 수가 2에서 4인 한글 패턴
@@ -48,13 +51,17 @@ async def extract_text_from_image(file: UploadFile = File(...)):
         else :
             gender = "gender check failed"
         
-        if gender_check in ["1","2","3","4"]:
-            if gender_check == "1" or "2":
-                year = 1900
-            else :
-                year = 2000
+        if gender_check == "1" or gender_check == "2":
+            print("gender_check 1900")
+            year = 1900
+        elif gender_check == "3" or gender_check == "4":
+            print("gender_check 2000")
+            year = 2000
+        
+        print(f"gender_check = {gender_check}")
         tmp = int(birth[0:2])
         year += tmp
+        print(f"tmp : {tmp}, year = {year}")
         month = birth[2:4]
         day = birth[4:6]
         birth = f"{year}-{month}-{day}"
